@@ -11,6 +11,7 @@ import { EntityUserProfile } from './entityUserProfile.entity';
 import { PropertySubscription } from './propertySubscription.entity';
 import { Street } from './street.entity';
 import { PropertyType } from './propertyTypes.entity';
+import { EntitySubscriberProfile } from './entitySubscriberProfile.entity';
 
 @Entity()
 export class EntityProfile {
@@ -52,4 +53,10 @@ export class EntityProfile {
 
   @ManyToOne(() => PropertyType, (propertyType) => propertyType.entityProfile)
   propertyTypes: PropertyType[];
+
+  @OneToMany(
+    () => EntitySubscriberProfile,
+    (entitySubscriberProfile) => entitySubscriberProfile.entityProfile,
+  )
+  entitySubscriberProfiles: EntitySubscriberProfile[];
 }

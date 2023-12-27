@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -30,6 +31,9 @@ export class EntitySubscriberProperty {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: string;
 
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
+
   // foreign keys
   @Column({ type: 'bigint' })
   propertyTypeId: string;
@@ -42,7 +46,7 @@ export class EntitySubscriberProperty {
   @JoinColumn({ name: 'propertyTypeId' })
   propertyType: PropertyType;
 
-  @ManyToOne(
+  @OneToMany(
     () => PropertySubscriptionUnit,
     (propertySubscriptionUnit) =>
       propertySubscriptionUnit.entitySubscriberProperty,

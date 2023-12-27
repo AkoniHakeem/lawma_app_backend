@@ -11,6 +11,8 @@ import {
 import { PropertySubscription } from './propertySubscription.entity';
 import { PhoneCode } from './phoneCode.entity';
 import { EntitySubscriberProperty } from './entitySubscriberProperty.entity';
+import { EntityProfile } from './entityProfile.entity';
+import { EntityUserProfile } from './entityUserProfile.entity';
 
 @Entity()
 export class EntitySubscriberProfile {
@@ -39,20 +41,16 @@ export class EntitySubscriberProfile {
   updatedAt: Date;
 
   // foreign key
-  // @Column({ type: 'bigint' })
-  // entityProfileId: string;
-
   @Column({ type: 'bigint', nullable: true })
   phoneCodeId: string;
 
-  // relations
-  // @ManyToOne(
-  //   () => EntityProfile,
-  //   (entityProfile) => entityProfile.entitySubscriberProfiles,
-  // )
-  // @JoinColumn({ name: 'entityProfileId' })
-  // entityProfile: EntityProfile;
+  @Column({ type: 'bigint', nullable: true })
+  createdByEntityUserProfileId: string;
 
+  @Column({ type: 'bigint', nullable: true })
+  createdByEntityProfileId: string;
+
+  // relations
   @OneToMany(
     () => PropertySubscription,
     (propertySubscriber) => propertySubscriber.entitySubscriberProfile,
@@ -69,4 +67,18 @@ export class EntitySubscriberProfile {
       entitySubscriberProperty.entitySubscriberProfile,
   )
   entitySubscriberProperty: EntitySubscriberProperty[];
+
+  @ManyToOne(
+    () => EntityProfile,
+    (entityProfile) => entityProfile.entitySubscriberProfiles,
+  )
+  @JoinColumn({ name: 'createdByEntityProfileId' })
+  entityProfile: EntityProfile;
+
+  @ManyToOne(
+    () => EntityUserProfile,
+    (entityUserProfile) => entityUserProfile.createdEntitySubscriberProfiles,
+  )
+  @JoinColumn({ name: 'createdByEntityUserProfileId' })
+  entityUserProfile: EntityUserProfile;
 }

@@ -2,10 +2,12 @@ import { SubscriberProfileRoleEnum } from '../../lib/enums';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -40,6 +42,9 @@ export class PropertySubscription {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
+
   // foreign keys
   @Column({ type: 'bigint' })
   streetId: string;
@@ -71,7 +76,7 @@ export class PropertySubscription {
   @OneToMany(() => Billing, (billing) => billing.propertySubscription)
   billings: Billing[];
 
-  @OneToMany(
+  @OneToOne(
     () => BillingAccount,
     (billingAccount) => billingAccount.propertySubscription,
   )

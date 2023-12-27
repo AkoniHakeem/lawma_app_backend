@@ -5,7 +5,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { EntitySubscriberProfile } from './entitySubscriberProfile.entity';
 import { PropertySubscription } from './propertySubscription.entity';
 
 @Entity()

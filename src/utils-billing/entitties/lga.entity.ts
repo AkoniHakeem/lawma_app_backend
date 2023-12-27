@@ -23,8 +23,8 @@ export class Lga {
   createdAt: string;
 
   // relations
-  @OneToMany(() => Street, (street) => street.lga)
-  streets: Street[];
+  // @OneToMany(() => Street, (street) => street.lga)
+  // streets: Street[];
 
   @OneToMany(() => LgaWard, (lgaWard) => lgaWard.lga)
   lgaWards: LgaWard[];

@@ -17,10 +17,10 @@ export class Currency {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   fullname: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   symbol: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
@@ -31,7 +31,7 @@ export class Currency {
 
   // foreign keys
   @Column({ type: 'bigint' })
-  countryId: number;
+  countryId: string;
 
   // relations
   @ManyToOne(() => Country, (country) => country.currencies)

@@ -5,7 +5,6 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { EntitySubscriberProperty } from './entitySubscriberProperty.entity';
 import { PropertySubscription } from './propertySubscription.entity';
 
 @Entity()
@@ -32,7 +31,7 @@ export class Payment {
   // relations
   @ManyToOne(
     () => PropertySubscription,
-    (entitySubscriberProperty) => entitySubscriberProperty.payments,
+    (propertySubscription) => propertySubscription.payments,
   )
   @JoinColumn({ name: 'propertySubscriptionId' })
   propertySubscription: PropertySubscription;

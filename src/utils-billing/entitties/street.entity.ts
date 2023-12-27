@@ -20,8 +20,8 @@ export class Street {
   name: string;
 
   // foreign key
-  @Column({ type: 'bigint' })
-  lgaId: string;
+  // @Column({ type: 'bigint' })
+  // lgaId: string;
 
   @Column({ type: 'bigint' })
   lgaWardId: string;
@@ -30,9 +30,9 @@ export class Street {
   entityProfileId: string;
 
   // relations
-  @ManyToOne(() => Lga, (lga) => lga.streets)
-  @JoinColumn({ name: 'lgaId' })
-  lga: Lga;
+  // @ManyToOne(() => Lga, (lga) => lga.streets)
+  // @JoinColumn({ name: 'lgaId' })
+  // lga: Lga;
 
   @ManyToOne(() => LgaWard, (lgaWard) => lgaWard.streets)
   lgaWard: LgaWard;

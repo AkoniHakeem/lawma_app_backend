@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { EntityProfile } from './entityProfile.entity';
 import { PhoneCode } from './phoneCode.entity';
+import { EntitySubscriberProfile } from './entitySubscriberProfile.entity';
 
 @Entity()
 export class EntityUserProfile {
@@ -57,4 +59,10 @@ export class EntityUserProfile {
   @ManyToOne(() => PhoneCode, (phoneCode) => phoneCode.entityUserProfiles)
   @JoinColumn({ name: 'phoneCodeId' })
   phoneCode: PhoneCode;
+
+  @OneToMany(
+    () => EntitySubscriberProfile,
+    (entitySubscriberProfile) => entitySubscriberProfile.entityUserProfile,
+  )
+  createdEntitySubscriberProfiles: EntitySubscriberProfile[];
 }
