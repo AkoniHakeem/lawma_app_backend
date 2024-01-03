@@ -15,6 +15,7 @@ import {
   GetPropertyTypeQuery,
   GetPhoneCodesQuery,
   GetSubscriptionQuery,
+  GeneratePrintBillingDto,
 } from './dtos/dto';
 import { UtilsBillingService } from './utils-billing.service';
 import { IsAuthenticated } from '../shared/isAuthenticated.guard';
@@ -82,6 +83,18 @@ export class UtilsBillingController {
     return await this.utilService.getSubscriptions(
       authPayload.profile.entityProfileId,
       getSubscriptionQuery,
+    );
+  }
+
+  @Post('billing')
+  @UseGuards(IsAuthenticated)
+  async generatePrintBilling(
+    @Body() generatePrintBillingDto: GeneratePrintBillingDto,
+    @GetAuthPayload() authPayload: AuthTokenPayload,
+  ) {
+    await this.utilService.generatePrintBilling(
+      generatePrintBillingDto,
+      authPayload.profile.entityProfileId,
     );
   }
 

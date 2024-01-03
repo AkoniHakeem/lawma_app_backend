@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  isNotEmpty,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -196,4 +197,34 @@ export class GetSubscriptionQuery {
   @IsNumber()
   // @IsPositive()
   page: number;
+}
+
+export class GeneratePrintBillingDto {
+  @IsOptional()
+  @IsString()
+  streetId: string;
+
+  @IsOptional()
+  @IsString()
+  propertySuscriptionId: string;
+
+  @IsOptional()
+  @IsString()
+  year: string;
+
+  @IsOptional()
+  @IsString()
+  month: string;
+
+  @IsOptional()
+  @IsEnum(['print', 'generate'])
+  type: 'print' | 'generate';
+
+  @IsOptional()
+  @IsBoolean()
+  forAllProperties: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  forPropertiesOnStreet: boolean;
 }
