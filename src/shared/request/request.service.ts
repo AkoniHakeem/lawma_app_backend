@@ -30,7 +30,7 @@ export class RequestService {
       'AUTH_SERVER_API_ACCESS_TOKEN',
     );
     baseURL = baseURL || this.configService.getOrThrow('AUTH_SERVER_URL');
-    const Authorization = headers.Authorization || `Besrer ${authToken}`;
+    const Authorization = headers.Authorization || `Bearer ${authToken}`;
 
     const response = await this.requestApi.axiosRef(path, {
       headers: { ...headers, Authorization },
