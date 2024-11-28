@@ -2140,4 +2140,25 @@ export class UtilsBillingService {
     }
     return metrics;
   }
+  async getOperatorMetrics(entityProfileId: string) {
+    const operatorMetrics = {
+      operatorCount: 0,
+    };
+    try {
+      operatorMetrics.operatorCount = await this.dbManager.count(
+        EntityUserProfile,
+        {
+          where: {
+            entityProfileId,
+          },
+        },
+      );
+    } catch (err) {
+      Logger.log(
+        'An error occurred while calculating total operator count',
+        err,
+      );
+    }
+    return operatorMetrics;
+  }
 }
