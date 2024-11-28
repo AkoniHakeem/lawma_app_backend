@@ -7,5 +7,7 @@
 			"path": "../../../mother-ship-nest"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "mother-ship-nest"
+	}
 }

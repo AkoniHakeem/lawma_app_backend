@@ -251,3 +251,81 @@
 //     });
 //   });
 // });
+
+
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { UtilsBillingService } from './utils-billing.service';
+// import { PropertySubscription } from './entitties/propertySubscription.entity';
+// import { Billing } from './entitties/billing.entity';
+// import { SubscriberProfileRoleEnum } from '../lib/enums';
+// import { In } from 'typeorm';
+
+// describe('UtilsBillingService', () => {
+//   let service: UtilsBillingService;
+//   let dbManager: any; // Mocked dbManager
+
+//   beforeEach(async () => {
+//     // Create a testing module and mock the dbManager
+//     const module: TestingModule = await Test.createTestingModule({
+//       providers: [
+//         UtilsBillingService,
+//         {
+//           provide: 'DbManager',
+//           useValue: {
+//             count: jest.fn(),
+//           },
+//         },
+//       ],
+//     }).compile();
+
+//     // Get the service and the mocked dbManager
+//     service = module.get<UtilsBillingService>(UtilsBillingService);
+//     dbManager = module.get('DbManager');
+//   });
+
+//   it('should count only ENTITY_SUBSCRIBER_PROFILE subscribers and all billings', async () => {
+//     // Mock the count method of dbManager
+//     dbManager.count.mockResolvedValueOnce(1200)  // Mock subscriber count
+//       .mockResolvedValueOnce(3500);  // Mock billing count
+
+//     // Call the method to test
+//     const result = await service.getSubscriberAndBillingCounts();
+
+//     // Assertions for the return values
+//     expect(result).toEqual({
+//       subscriberCount: 1200,
+//       billingCount: 3500,
+//     });
+
+//     // Ensure dbManager.count was called with the correct arguments
+//     expect(dbManager.count).toHaveBeenCalledWith(PropertySubscription, {
+//       where: {
+//         subscriberProfileRole: In([SubscriberProfileRoleEnum.OWNER, SubscriberProfileRoleEnum.CUSTODIAN]),
+//       },
+//     });
+//     expect(dbManager.count).toHaveBeenCalledWith(Billing);
+//     expect(dbManager.count).toHaveBeenCalledTimes(2); // Ensures count was called twice
+//   });
+
+//   // Additional test case: for error handling or edge cases
+//   it('should handle errors gracefully when fetching counts', async () => {
+//     // Mock the count method to throw an error
+//     dbManager.count.mockRejectedValueOnce(new Error('Database error'));
+
+//     // Call the method and check for error handling (assuming the method returns 0 in case of errors)
+//     const result = await service.getSubscriberAndBillingCounts();
+
+//     // Assertions to check that errors do not crash the method and default values are returned
+//     expect(result).toEqual({
+//       subscriberCount: 0,
+//       billingCount: 0,
+//     });
+
+//     // Ensure dbManager.count was called and caught the error
+//     expect(dbManager.count).toHaveBeenCalledWith(PropertySubscription, {
+//       where: {
+//         subscriberProfileRole: In([SubscriberProfileRoleEnum.OWNER, SubscriberProfileRoleEnum.CUSTODIAN]),
+//       },
+//     });
+//   });
+// });

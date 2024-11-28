@@ -1,5 +1,5 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { DataSource, EntityManager, FindOperator, ILike, Raw } from 'typeorm';
+import { DataSource, EntityManager, FindOperator, ILike, In, Raw } from 'typeorm';
 import {
   CreateLgaDto,
   CreateLgaWardDto,
@@ -2118,5 +2118,26 @@ export class UtilsBillingService {
     } else {
       // TODO: handle case
     }
+  }
+
+  async getSubscriberAndBillingCounts() {
+    const metrics = {
+      subscriberCount: 0,
+      billingCount: 0,
+    };
+  
+    try {
+      metrics.subscriberCount = await this.dbManager.count(EntitySubscriberProfile, 
+    );
+    } catch (err) {
+      Logger.error('Error fetching subscriber count', err);
+    }
+    try {
+      // Count all processed billings
+      metrics.billingCount = await this.dbManager.count(Billing);
+    } catch (err) {
+      Logger.error('Error fetching billing count', err);
+    }
+    return metrics;
   }
 }
