@@ -2119,7 +2119,6 @@ export class UtilsBillingService {
       // TODO: handle case
     }
   }
-
   async getSubscriberAndBillingCounts() {
     const metrics = {
       subscriberCount: 0,
