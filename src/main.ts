@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import processEnvObj from './config/envs';
 import { Logger, VersioningType } from '@nestjs/common';
+import { join } from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +13,36 @@ async function bootstrap() {
     prefix: 'v1',
   });
 
+  // prefix for api
+  app.setGlobalPrefix('v1');
+
+  // enable cors
+  app.enableCors({
+    origin: '*',
+  });
+
+  // update this to serve fronted files in /public/spa
+  // Serve static files from /public/spa
+  const spaPath = join(__dirname, '..', '/public', 'spa');
+  app.use(express.static(spaPath));
+
+  // Serve index.html for SPA routes not handled by the backend
+  app.use('*', (req, res, next) => {
+    const url = req.originalUrl;
+
+    // Check if the request is for an API route
+    if (url.startsWith('/v1')) {
+      // This is an API route, pass control to the next middleware
+      return next();
+    }
+
+    // For all other routes, serve the SPA's index.html
+    res.sendFile(join(spaPath, 'index.html'), (err) => {
+      if (err) {
+        next(err);
+      }
+    });
+  });
   const appName = processEnvObj.PROJECT_NAME || 'Nest Js app';
   const port =
     process.env.PORT ||

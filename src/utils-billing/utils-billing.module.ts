@@ -5,9 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [
-    EventEmitterModule.forRoot(),
-    SharedModule],
+  imports: [EventEmitterModule.forRoot(), SharedModule],
   controllers: [UtilsBillingController],
   providers: [UtilsBillingService],
 })

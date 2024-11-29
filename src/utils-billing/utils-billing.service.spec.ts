@@ -266,6 +266,19 @@
 
 //   beforeEach(async () => {
 //     // Create a testing module and mock the dbManager
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { UtilsBillingService } from './utils-billing.service';
+
+// describe('UtilsBillingService - getAllOperatorMetric', () => {
+//   let service: UtilsBillingService;
+//   let mockDbManager: { count: jest.Mock };
+
+//   beforeEach(async () => {
+//     // Mock dbManager with only the methods we need
+//     mockDbManager = {
+//       count: jest.fn(),
+//     };
+
 //     const module: TestingModule = await Test.createTestingModule({
 //       providers: [
 //         UtilsBillingService,
@@ -274,6 +287,8 @@
 //           useValue: {
 //             count: jest.fn(),
 //           },
+//           provide: 'DB_MANAGER', // Provide the mock
+//           useValue: mockDbManager,
 //         },
 //       ],
 //     }).compile();
@@ -326,6 +341,53 @@
 //       where: {
 //         subscriberProfileRole: In([SubscriberProfileRoleEnum.OWNER, SubscriberProfileRoleEnum.CUSTODIAN]),
 //       },
+//     service = module.get<UtilsBillingService>(UtilsBillingService);
+//   });
+
+//   it('should return the operator count when dbManager.count resolves', async () => {
+//     // Arrange
+//     const entityProfileId = '123';
+//     const mockCount = 5;
+//     (mockDbManager.count as jest.Mock).mockResolvedValue(mockCount);
+
+//     // Act
+//     const result = await service.getAllOperatorMetric(entityProfileId);
+
+//     // Assert
+//     expect(result).toBe(mockCount);
+//     expect(mockDbManager.count).toHaveBeenCalledWith(expect.anything(), {
+//       where: { entityProfileId },
+//     });
+//   });
+
+//   it('should return 0 if dbManager.count throws an error', async () => {
+//     // Arrange
+//     const entityProfileId = '123';
+//     (mockDbManager.count as jest.Mock).mockRejectedValue(
+//       new Error('Database error'),
+//     );
+
+//     // Act
+//     const result = await service.getAllOperatorMetric(entityProfileId);
+
+//     // Assert
+//     expect(result).toBe(0);
+//     expect(mockDbManager.count).toHaveBeenCalledWith(expect.anything(), {
+//       where: { entityProfileId },
+//     });
+//   });
+
+//   it('should call dbManager.count with correct arguments', async () => {
+//     // Arrange
+//     const entityProfileId = '456';
+//     (mockDbManager.count as jest.Mock).mockResolvedValue(3);
+
+//     // Act
+//     await service.getAllOperatorMetric(entityProfileId);
+
+//     // Assert
+//     expect(mockDbManager.count).toHaveBeenCalledWith(expect.anything(), {
+//       where: { entityProfileId },
 //     });
 //   });
 // });

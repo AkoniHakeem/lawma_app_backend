@@ -2139,6 +2139,9 @@ export class UtilsBillingService {
     }
     return metrics;
   }
+
+  //getOperatorMetrics
+
   async getOperatorMetrics(entityProfileId: string) {
     const operatorMetrics = {
       operatorCount: 0,

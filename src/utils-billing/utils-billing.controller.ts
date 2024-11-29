@@ -357,6 +357,13 @@ export class UtilsBillingController {
     );
   }
 
+  @Get('operator/metrics')
+  async getMetrics(@GetAuthPayload() authPayload: AuthTokenPayload['profile']) {
+    return await this.utilService.getOperatorMetrics(
+      authPayload.entityProfileId,
+    );
+  }
+
   // webhooks
   @Post('paystack')
   async handlePaystackWebhookEvents(
