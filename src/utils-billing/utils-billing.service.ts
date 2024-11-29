@@ -1,4 +1,9 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { DataSource, EntityManager, FindOperator, ILike, Raw } from 'typeorm';
 import {
   CreateLgaDto,
@@ -614,6 +619,21 @@ export class UtilsBillingService {
         );
 
         if (sucessHttpCodes.includes(serverResponse.status)) {
+          // Check if a DVA already exists for this property subscription
+          const existingDVA = await this.dbManager.findOne(
+            SubscriberVirtualAccountDetail,
+            {
+              where: { propertySubscriptionId },
+            },
+          );
+
+          if (existingDVA) {
+            throwBadRequest(
+              `Dedicated Virtual Account already exists for this Subscribed Property: ${propertySubscriptionId}, account number: ${existingDVA.account_number}`,
+            );
+            return; // Skip creating a new DVA
+          }
+
           // create virtual account on fintech service (paystack)
           const userDataForDVA: PaystackCustomer = {
             first_name: entitySubscriberProfile.firstName,
