@@ -97,7 +97,7 @@ export class AuthService {
       signupDto,
     });
 
-    const entityProfileDto = signupDto.entityProfile;
+    const entityProfileDto = signupDto.entityProfile; //entityprofile.name = "silver setting moon"
 
     let authTokenPayload: { token: string };
     await this.dbManager.transaction(async (transactionManager) => {

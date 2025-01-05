@@ -104,7 +104,7 @@ export class UtilsBillingService {
     createUserDto: CreateUserDto,
     authPayload: AuthTokenPayload,
   ) {
-    const { profileType } = createUserDto;
+    const { profileType } = createUserDto; //===========what are u destructruringhere?=======profileType = undefined=====gotten when filled in request=======
     if (
       ![
         ProfileTypes.ENTITY_SUBSCRIBER_PROFILE,
@@ -156,7 +156,7 @@ export class UtilsBillingService {
       throw new HttpException('User creation failed', 500);
     }
 
-    if (!userData.isNewUser && !userData.userCreatedInApp) {
+    if (!userData.isNewUser && !userData.userCreatedInApp) {  //isNewUser should be true
       throwForbidden('User already exist!');
     }
 
@@ -1483,7 +1483,7 @@ export class UtilsBillingService {
     }[];
   }
 
-  async getDashboardMetrics(entityProfileId: string) {
+  async getDashboardMetrics(entityProfileId: string, year: string) {
     // get number of streets
     // get number of subscribers
     // get number of properties
@@ -1496,6 +1496,7 @@ export class UtilsBillingService {
       totalPayments: 0,
       billingAcrossMonths: [],
       paymentsAcrossMonths: [],
+      year: year
     };
 
     try {
@@ -1545,7 +1546,8 @@ export class UtilsBillingService {
           propertySubscription: {
             entityProfileId,
           },
-          year: new Date().getFullYear().toString(),
+          // year: new Date().getFullYear().toString(),   //ORIGINAL
+          year: year || new Date().getFullYear().toString()git
         },
       });
 

@@ -39,6 +39,7 @@ import { IsAuthenticated } from '../shared/isAuthenticated.guard';
 import { ProfileTypes } from '../lib/enums';
 import { UpdatePropertySubscriptionValidationPipe } from './dtos/custom-pipes';
 
+
 @Controller('utils-billing')
 export class UtilsBillingController {
   constructor(private utilService: UtilsBillingService) {
@@ -349,11 +350,18 @@ export class UtilsBillingController {
     return await this.utilService.getPhoneCode(query);
   }
 
+  // @Get('/dashboard/metrics')
+  // @UseGuards(IsAuthenticated)
+  // async getDashboardMetrics(@GetAuthPayload() authPayload: AuthTokenPayload) {
+  //   return await this.utilService.getDashboardMetrics(
+  //     authPayload.profile.entityProfileId,
+  //   );
+  // }
   @Get('/dashboard/metrics')
   @UseGuards(IsAuthenticated)
-  async getDashboardMetrics(@GetAuthPayload() authPayload: AuthTokenPayload) {
+  async getDashboardMetrics(@GetAuthPayload() authPayload: AuthTokenPayload, @Query() year: string) {
     return await this.utilService.getDashboardMetrics(
-      authPayload.profile.entityProfileId,
+      authPayload.profile.entityProfileId, year
     );
   }
 

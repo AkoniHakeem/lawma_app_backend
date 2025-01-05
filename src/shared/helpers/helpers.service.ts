@@ -11,13 +11,7 @@ export class HelpersService {
 
   private dbManager: EntityManager;
 
-  async getEntityUserProfileByEmailOrId({
-    email,
-    entityUserProfileId,
-  }: {
-    email?: string;
-    entityUserProfileId?: string;
-  }): Promise<EntityUserProfile> {
+  async getEntityUserProfileByEmailOrId({email, entityUserProfileId}: {email?: string; entityUserProfileId?: string}): Promise<EntityUserProfile> {
     const entityUserProfile = await this.dbManager.findOne(EntityUserProfile, {
       where: {
         ...(email ? { email } : { id: entityUserProfileId }),
