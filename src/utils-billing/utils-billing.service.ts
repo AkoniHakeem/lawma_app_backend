@@ -1547,7 +1547,7 @@ export class UtilsBillingService {
             entityProfileId,
           },
           // year: new Date().getFullYear().toString(),   //ORIGINAL
-          year: year || new Date().getFullYear().toString()git
+          year: year || new Date().getFullYear().toString()
         },
       });
 
