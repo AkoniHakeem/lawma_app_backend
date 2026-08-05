@@ -8,7 +8,6 @@ import {
 } from '../utils-billing/entitties/permission.entity';
 import { UserRole } from '../utils-billing/entitties/userRole.entity';
 import { EntityUserProfile } from '../utils-billing/entitties/entityUserProfile.entity';
-import { EntitySubscriberProfile } from '../utils-billing/entitties/entitySubscriberProfile.entity';
 import { SYSTEM_ROLES, PERMISSIONS } from './decorators/auth.decorators';
 
 export interface CreateRoleDto {
@@ -474,17 +473,15 @@ export class RbacService {
 
   /**
    * Get all users in an entity with their roles
+   *
+   * NOTE: Subscriber profiles (service clients) are deliberately excluded —
+   * they don't authenticate against the operator app and therefore don't
+   * participate in RBAC role assignment.
    */
   async getEntityUsers(entityProfileId: string) {
-    // Get all entity user profiles
+    // Get all entity user profiles (operator staff only)
     const entityUsers = await this.dbManager.find(EntityUserProfile, {
       where: { entityProfileId },
-      relations: ['userRoles', 'userRoles.role'],
-    });
-
-    // Get all entity subscriber profiles
-    const subscriberUsers = await this.dbManager.find(EntitySubscriberProfile, {
-      where: { createdByEntityProfileId: entityProfileId },
       relations: ['userRoles', 'userRoles.role'],
     });
 
@@ -510,9 +507,6 @@ export class RbacService {
     return {
       entityUsers: entityUsers.map((user) =>
         formatUser(user, 'entity_user_profile'),
-      ),
-      subscriberUsers: subscriberUsers.map((user) =>
-        formatUser(user, 'entity_subscriber_profile'),
       ),
     };
   }

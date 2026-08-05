@@ -33,10 +33,16 @@ export class AssignUserRoleDto {
 
 @Controller('rbac')
 export class RbacController {
-  constructor(private readonly rbacService: RbacService) {}
+  constructor(private readonly rbacService: RbacService) { }
 
   /**
-   * Get current user profile with roles and permissions - SIMPLIFIED FOR EXISTING USERS
+   * Get current user profile with roles and permissions.
+   *
+   * Reads the user's actual role assignments and permissions from the
+   * database. If no roles are assigned (e.g. legacy account or freshly
+   * created staff user), falls back to a minimal "staff" / "customer"
+   * default so the user can still navigate the app, but the response
+   * always reflects whatever has actually been assigned to them.
    */
   @Get('profile')
   @UseGuards(IsAuthenticated)
@@ -49,106 +55,142 @@ export class RbacController {
 
     const profileType =
       authPayload.profile?.profileType || 'entity_user_profile';
+    const profileId =
+      authPayload.profile?.profileTypeId || authPayload.userData.id;
 
-    // Provide generous default permissions for existing users during RBAC transition
-    const defaultRoles = [
-      {
-        id: 'default-role',
-        name:
-          profileType === 'entity_subscriber_profile' ? 'customer' : 'staff',
-        displayName:
-          profileType === 'entity_subscriber_profile'
-            ? 'Customer'
-            : 'Staff Member',
-        description: 'Default role for existing users during RBAC transition',
-        isSystemRole: false,
-      },
-    ];
+    // Try to load actual roles + permissions from the database.
+    let roles: any[] = [];
+    let permissions: any[] = [];
 
-    const defaultPermissions = [
-      {
-        id: '1',
-        name: 'dashboard:view',
-        displayName: 'View Dashboard',
-        category: 'dashboard',
-        action: 'view',
-      },
-      {
-        id: '2',
-        name: 'billing:read',
-        displayName: 'View Bills',
-        category: 'billing',
-        action: 'read',
-      },
-      {
-        id: '3',
-        name: 'payments:read',
-        displayName: 'View Payments',
-        category: 'payments',
-        action: 'read',
-      },
-      {
-        id: '4',
-        name: 'properties:read',
-        displayName: 'View Properties',
-        category: 'properties',
-        action: 'read',
-      },
-    ];
+    try {
+      const result = await this.rbacService.getUserRolesAndPermissions(
+        profileId,
+        profileType as 'entity_user_profile' | 'entity_subscriber_profile',
+      );
 
-    // Add additional permissions for entity users (non-customers)
-    if (profileType !== 'entity_subscriber_profile') {
-      defaultPermissions.push(
+      roles = (result.roles ?? []).map((role) => ({
+        id: role.id,
+        name: role.name,
+        displayName: role.displayName,
+        description: role.description,
+        isSystemRole: role.isSystemRole,
+      }));
+
+      permissions = (result.permissions ?? []).map((permission) => ({
+        id: permission.id,
+        name: permission.name,
+        displayName: permission.displayName,
+        category: permission.category,
+        action: permission.action,
+      }));
+    } catch (err) {
+      console.warn(
+        'Failed to load roles/permissions for /rbac/profile, falling back to defaults:',
+        err,
+      );
+    }
+
+    // Fallback when the user has no roles assigned yet. Keeps existing
+    // sessions working but does NOT pretend the user is a super-admin.
+    if (roles.length === 0) {
+      const isSubscriber = profileType === 'entity_subscriber_profile';
+      roles = [
         {
-          id: '5',
-          name: 'billing:create',
-          displayName: 'Create Bills',
+          id: 'default-role',
+          name: isSubscriber ? 'customer' : 'staff',
+          displayName: isSubscriber ? 'Customer' : 'Staff Member',
+          description:
+            'Default role for users without explicit role assignments',
+          isSystemRole: false,
+        },
+      ];
+
+      const fallbackPermissions = [
+        {
+          id: '1',
+          name: 'dashboard:view',
+          displayName: 'View Dashboard',
+          category: 'dashboard',
+          action: 'view',
+        },
+        {
+          id: '2',
+          name: 'billing:read',
+          displayName: 'View Bills',
           category: 'billing',
-          action: 'create',
-        },
-        {
-          id: '6',
-          name: 'billing:update',
-          displayName: 'Update Bills',
-          category: 'billing',
-          action: 'update',
-        },
-        {
-          id: '7',
-          name: 'payments:create',
-          displayName: 'Create Payments',
-          category: 'payments',
-          action: 'create',
-        },
-        {
-          id: '8',
-          name: 'properties:create',
-          displayName: 'Create Properties',
-          category: 'properties',
-          action: 'create',
-        },
-        {
-          id: '9',
-          name: 'properties:update',
-          displayName: 'Update Properties',
-          category: 'properties',
-          action: 'update',
-        },
-        {
-          id: '10',
-          name: 'users:read',
-          displayName: 'View Users',
-          category: 'users',
           action: 'read',
         },
         {
-          id: '11',
-          name: 'reports:view',
-          displayName: 'View Reports',
-          category: 'reports',
-          action: 'view',
+          id: '3',
+          name: 'payments:read',
+          displayName: 'View Payments',
+          category: 'payments',
+          action: 'read',
         },
-      );
+        {
+          id: '4',
+          name: 'properties:read',
+          displayName: 'View Properties',
+          category: 'properties',
+          action: 'read',
+        },
+      ];
+
+      if (!isSubscriber) {
+        fallbackPermissions.push(
+          {
+            id: '5',
+            name: 'billing:create',
+            displayName: 'Create Bills',
+            category: 'billing',
+            action: 'create',
+          },
+          {
+            id: '6',
+            name: 'billing:update',
+            displayName: 'Update Bills',
+            category: 'billing',
+            action: 'update',
+          },
+          {
+            id: '7',
+            name: 'payments:create',
+            displayName: 'Create Payments',
+            category: 'payments',
+            action: 'create',
+          },
+          {
+            id: '8',
+            name: 'properties:create',
+            displayName: 'Create Properties',
+            category: 'properties',
+            action: 'create',
+          },
+          {
+            id: '9',
+            name: 'properties:update',
+            displayName: 'Update Properties',
+            category: 'properties',
+            action: 'update',
+          },
+          {
+            id: '10',
+            name: 'users:read',
+            displayName: 'View Users',
+            category: 'users',
+            action: 'read',
+          },
+          {
+            id: '11',
+            name: 'reports:view',
+            displayName: 'View Reports',
+            category: 'reports',
+            action: 'view',
+          },
+        );
+      }
+
+      permissions = fallbackPermissions;
     }
 
     return {
@@ -157,12 +199,11 @@ export class RbacController {
         firstName: authPayload.userData.firstName,
         lastName: authPayload.userData.lastName,
         email: authPayload.userData.email,
-        profileType: profileType,
-        profileId:
-          authPayload.profile?.profileTypeId || authPayload.userData.id,
+        profileType,
+        profileId,
       },
-      roles: defaultRoles,
-      permissions: defaultPermissions,
+      roles,
+      permissions,
     };
   }
 
